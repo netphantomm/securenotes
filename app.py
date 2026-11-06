@@ -1,10 +1,10 @@
-from flask import Flask
+from flask import Flask, render_template 
 
 app = Flask(__name__)
 
 @app.get("/")
 def index():
-    return "SecureNotes: first version"
+    return render_template("index.html", title="SecureNotes")
 
 @app.get("/health")
 def health():
