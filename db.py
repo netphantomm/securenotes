@@ -12,3 +12,13 @@ def get_notes():
         return notes
     finally:
         connection.close()
+def create_note(title, body):
+    connection = sqlite3.connect(DB_PATH)
+    try:
+        connection.execute(
+            "INSERT INTO notes (title, body) VALUES (?, ?)",
+            (title, body)
+        )
+        connection.commit()
+    finally:
+        connection.close()
