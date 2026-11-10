@@ -2,10 +2,22 @@
 <html lang="ru">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ title }}</title>
 </head>
 <body>
     <h1>{{ title }}</h1>
     <p>Моя лаборатория безопасности на Flask.</p>
+
+    <h2>Заметки</h2>
+
+    {% for note in notes %}
+        <article>
+            <h3>{{ note["title"] }}</h3>
+            <p>{{ note["body"] }}</p>
+        </article>
+    {% else %}
+        <p>Заметок пока нет.</p>
+    {% endfor %}
 </body>
 </html>
