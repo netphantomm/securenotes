@@ -34,3 +34,28 @@ def delete_note(note_id):
         return cursor.rowcount == 1
     finally:
         connection.close()
+
+
+def get_note(note_id):
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    try:
+        cursor = connection.execute(
+            "SELECT id, title, body FROM notes WHERE id = ?",
+            (note_id,),
+        )
+        note = cursor.fetchone()
+        return note
+    finally:
+        connection.close()
+def update_note(note_id, title, body):
+    connection = sqlite3.connect(DB_PATH)
+    try:
+        cursor = connection.execute(
+            "UPDATE notes SET title = ?, body = ? WHERE id = ?",
+            (title, body, note_id,),
+        )
+        connection.commit()
+        return cursor.rowcount == 1
+    finally:
+        connection.close()

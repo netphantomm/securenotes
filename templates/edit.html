@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Редактирование заметки</title>
+</head>
+<body>
+    <h1>Редактирование заметки</h1>
+
+    <form method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <label for="note-title">Заголовок</label>
+        <input id="note-title" name="title" type="text"
+               value="{{ note['title'] }}" maxlength="120" required>
+
+        <label for="note-body">Текст заметки</label>
+        <textarea id="note-body" name="body" rows="4"
+                  maxlength="5000" required>{{ note['body'] }}</textarea>
+
+        <button type="submit">Сохранить</button>
+    </form>
+
+    <a href="{{ url_for('index') }}">Вернуться к заметкам</a>
+</body>
+</html>

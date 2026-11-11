@@ -1,7 +1,7 @@
 import os
 from flask import Flask, abort, redirect, render_template, request, url_for
 from flask_wtf.csrf import CSRFProtect
-from db import create_note, get_notes, delete_note
+from db import create_note, get_notes, delete_note, get_note, update_note
 
 app = Flask(__name__)
 
@@ -23,6 +23,24 @@ def create_note_view():
     create_note(title, body)
     return redirect(url_for("index"), code=303)
 
+@app.post("/notes/<int:note_id>/edit")
+def update_note_view(note_id):
+    title = request.form.get("title", "").strip()
+    body = request.form.get("body", "").strip()
+
+    if not 1 <= len(title) <= 120:
+        abort(400, description="Title must contain 1 to 120 characters.")
+
+    if not 1 <= len(body) <= 5000:
+        abort(400, description="Body must contain 1 to 5000 characters.")
+
+    updated = update_note(note_id, title, body)
+
+    if not updated:
+        abort(404, description="Note not found.")
+
+    return redirect(url_for("index"), code=303)
+
 @app.get("/health")
 def health():
     return "ok"
@@ -33,3 +51,10 @@ def delete_note_view(note_id):
     if not deleted:
         abort(404, description="Note not found.")
     return redirect(url_for("index"), code=303)
+
+@app.get("/notes/<int:note_id>/edit")
+def edit_note_view(note_id):
+    note = get_note(note_id)
+    if note is None:
+        abort(404, description="Note not found.")
+    return render_template("edit.html", note=note)

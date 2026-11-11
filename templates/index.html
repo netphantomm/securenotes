@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="ru">
 <head>
@@ -8,31 +9,41 @@
 <body>
     <h1>{{ title }}</h1>
     <p>Моя лаборатория безопасности на Flask.</p>
-<h2>Создать заметку</h2>
 
-<form method="post" action="/notes">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <h2>Создать заметку</h2>
 
-    <label for="note-title">Заголовок</label>
-    <input id="note-title" name="title" type="text" maxlength="120" required>
+    <form method="post" action="/notes">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-    <label for="note-body">Текст заметки</label>
-    <textarea id="note-body" name="body" rows="4" maxlength="5000" required></textarea>
+        <label for="note-title">Заголовок</label>
+        <input id="note-title" name="title" type="text"
+               maxlength="120" required>
 
-    <button type="submit">Создать заметку</button>
-</form>
+        <label for="note-body">Текст заметки</label>
+        <textarea id="note-body" name="body" rows="4"
+                  maxlength="5000" required></textarea>
+
+        <button type="submit">Создать заметку</button>
+    </form>
 
     <h2>Заметки</h2>
 
     {% for note in notes %}
         <article>
-            <form method="post"
-      action="{{ url_for('delete_note_view', note_id=note['id']) }}">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <button type="submit">Удалить</button>
-</form>
             <h3>{{ note["title"] }}</h3>
             <p>{{ note["body"] }}</p>
+
+            <a href="{{ url_for('edit_note_view', note_id=note['id']) }}">
+                Редактировать
+            </a>
+
+            <form method="post"
+                  action="{{ url_for('delete_note_view', note_id=note['id']) }}">
+                <input type="hidden" name="csrf_token"
+                       value="{{ csrf_token() }}">
+
+                <button type="submit">Удалить</button>
+            </form>
         </article>
     {% else %}
         <p>Заметок пока нет.</p>
