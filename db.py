@@ -22,3 +22,15 @@ def create_note(title, body):
         connection.commit()
     finally:
         connection.close()
+
+def delete_note(note_id):
+    connection = sqlite3.connect(DB_PATH)
+    try:
+        cursor = connection.execute(
+            "DELETE FROM notes WHERE id = ?",
+            (note_id,),
+        )
+        connection.commit()
+        return cursor.rowcount == 1
+    finally:
+        connection.close()

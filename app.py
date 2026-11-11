@@ -1,7 +1,7 @@
 import os
 from flask import Flask, abort, redirect, render_template, request, url_for
 from flask_wtf.csrf import CSRFProtect
-from db import create_note, get_notes
+from db import create_note, get_notes, delete_note
 
 app = Flask(__name__)
 
@@ -26,3 +26,10 @@ def create_note_view():
 @app.get("/health")
 def health():
     return "ok"
+
+@app.post("/notes/<int:note_id>/delete")
+def delete_note_view(note_id):
+    deleted = delete_note(note_id)
+    if not deleted:
+        abort(404, description="Note not found.")
+    return redirect(url_for("index"), code=303)
