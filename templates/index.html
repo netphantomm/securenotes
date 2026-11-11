@@ -8,6 +8,19 @@
 <body>
     <h1>{{ title }}</h1>
     <p>Моя лаборатория безопасности на Flask.</p>
+<h2>Создать заметку</h2>
+
+<form method="post" action="/notes">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <label for="note-title">Заголовок</label>
+    <input id="note-title" name="title" type="text" maxlength="120" required>
+
+    <label for="note-body">Текст заметки</label>
+    <textarea id="note-body" name="body" rows="4" maxlength="5000" required></textarea>
+
+    <button type="submit">Создать заметку</button>
+</form>
 
     <h2>Заметки</h2>
 
