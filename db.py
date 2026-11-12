@@ -1,5 +1,6 @@
 import sqlite3
 from pathlib import Path
+from werkzeug.security import generate_password_hash
 
 DB_PATH = Path(__file__).resolve().parent / "instance" / "database.db"
 
@@ -57,5 +58,20 @@ def update_note(note_id, title, body):
         )
         connection.commit()
         return cursor.rowcount == 1
+    finally:
+        connection.close()
+
+
+def create_user(username, password):
+    password_hash = generate_password_hash(password)
+    connection = sqlite3.connect(DB_PATH)
+    
+    try:
+        cursor = connection.execute(
+            "INSERT INTO users (username, password_hash) VALUES (?, ?)",
+            (username, password_hash),
+        )
+        connection.commit()
+        return cursor.lastrowid
     finally:
         connection.close()
