@@ -1,9 +1,19 @@
 import os
-from flask import Flask, abort, redirect, render_template, request, url_for, session
+from flask import Flask, abort, redirect, render_template, request, url_for, session, url_for
 from flask_wtf.csrf import CSRFProtect
 from werkzeug.security import check_password_hash
-
 from db import create_note, delete_note, get_note, get_notes, get_user_by_username, update_note
+from sqlite3 import IntegrityError
+
+from db import (
+    create_note,
+    create_user,
+    delete_note,
+    get_note,
+    get_notes,
+    get_user_by_username,
+    update_note,
+)
 
 app = Flask(__name__)
 
@@ -84,3 +94,30 @@ def authenticate_view():
     session["user_id"] = user["id"]
 
     return redirect(url_for("index"), code=303)
+
+
+@app.get("/register")
+def register_view():
+    return render_template("register.html")
+
+@app.post("/register")
+def register_user_view():
+    username = request.form.get("username", "").strip()
+    password = request.form.get("password", "")
+    password_confirm = request.form.get("password_confirm", "")
+
+    if not 3 <= len(username) <= 32:
+        abort(400, description="Username must contain 3 to 32 characters.")
+
+    if not 12 <= len(password) <= 128:
+        abort(400, description="Password must contain 12 to 128 characters.")
+
+    if password != password_confirm:
+        abort(400, description="Passwords do not match.")
+
+    try:
+        create_user(username, password)
+    except IntegrityError:
+        abort(409, description="Username is already taken.")
+
+    return redirect(url_for("login_view"), code=303)

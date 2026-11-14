@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Регистрация — SecureNotes</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Создать учётную запись</h1>
+
+    <form method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <label for="username">Имя пользователя</label>
+        <input id="username" name="username" type="text"
+               minlength="3" maxlength="32"
+               autocomplete="username" required>
+
+        <label for="password">Пароль</label>
+        <input id="password" name="password" type="password"
+               minlength="12" maxlength="128"
+               autocomplete="new-password" required>
+
+        <label for="password-confirm">Повторите пароль</label>
+        <input id="password-confirm" name="password_confirm" type="password"
+               minlength="12" maxlength="128"
+               autocomplete="new-password" required>
+
+        <button type="submit">Зарегистрироваться</button>
+    </form>
+
+    <a href="{{ url_for('login_view') }}">Уже есть аккаунт? Войти</a>
+</body>
+</html>
