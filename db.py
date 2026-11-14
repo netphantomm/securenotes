@@ -75,3 +75,17 @@ def create_user(username, password):
         return cursor.lastrowid
     finally:
         connection.close()
+
+def get_user_by_username(username):
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+
+    try:
+        cursor = connection.execute(
+            "SELECT id, username, password_hash FROM users WHERE username = ?",
+            (username,),
+        )
+        user = cursor.fetchone()
+        return user
+    finally:
+        connection.close()

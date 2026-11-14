@@ -1,7 +1,9 @@
 import os
-from flask import Flask, abort, redirect, render_template, request, url_for
+from flask import Flask, abort, redirect, render_template, request, url_for, session
 from flask_wtf.csrf import CSRFProtect
-from db import create_note, get_notes, delete_note, get_note, update_note
+from werkzeug.security import check_password_hash
+
+from db import create_note, delete_note, get_note, get_notes, get_user_by_username, update_note
 
 app = Flask(__name__)
 
@@ -22,6 +24,11 @@ def create_note_view():
         abort(400, description="Body must contain 1 to 5000 characters.")
     create_note(title, body)
     return redirect(url_for("index"), code=303)
+
+
+@app.get("/login")
+def login_view():
+    return render_template("login.html")
 
 @app.post("/notes/<int:note_id>/edit")
 def update_note_view(note_id):
@@ -58,3 +65,22 @@ def edit_note_view(note_id):
     if note is None:
         abort(404, description="Note not found.")
     return render_template("edit.html", note=note)
+
+
+@app.post("/login")
+def authenticate_view():
+    username = request.form.get("username", "").strip()
+    password = request.form.get("password", "")
+
+    if not 1 <= len(username) <= 32 or not 1 <= len(password) <= 128:
+        abort(401, description="Invalid username or password.")
+
+    user = get_user_by_username(username)
+
+    if user is None or not check_password_hash(user["password_hash"], password):
+        abort(401, description="Invalid username or password.")
+
+    session.clear()
+    session["user_id"] = user["id"]
+
+    return redirect(url_for("index"), code=303)
