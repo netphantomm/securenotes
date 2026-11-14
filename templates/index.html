@@ -7,7 +7,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ title }}</title>
 </head>
-<body>
+<body><nav class="account-nav" aria-label="Учётная запись">
+    {% if session.get("user_id") %}
+        <form method="post" action="{{ url_for('logout_view') }}">
+            <input type="hidden" name="csrf_token"
+                   value="{{ csrf_token() }}">
+            <button type="submit">Выйти</button>
+        </form>
+    {% else %}
+        <a href="{{ url_for('login_view') }}">Войти</a>
+        <a href="{{ url_for('register_view') }}">Регистрация</a>
+    {% endif %}
+</nav>
     <h1>{{ title }}</h1>
     <p>Моя лаборатория безопасности на Flask.</p>
 

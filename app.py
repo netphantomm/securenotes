@@ -1,5 +1,5 @@
 import os
-from flask import Flask, abort, redirect, render_template, request, url_for, session, url_for
+from flask import Flask, abort, redirect, render_template, request, session, url_for
 from flask_wtf.csrf import CSRFProtect
 from werkzeug.security import check_password_hash
 from db import create_note, delete_note, get_note, get_notes, get_user_by_username, update_note
@@ -120,4 +120,10 @@ def register_user_view():
     except IntegrityError:
         abort(409, description="Username is already taken.")
 
+    return redirect(url_for("login_view"), code=303)
+
+
+@app.post("/logout")
+def logout_view():
+    session.clear()
     return redirect(url_for("login_view"), code=303)
