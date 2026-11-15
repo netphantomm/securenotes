@@ -32,3 +32,15 @@ def client(database, monkeypatch):
     monkeypatch.setitem(app.config, "SECRET_KEY", secret_key)
 
     return app.test_client()
+
+@pytest.fixture
+def owner_id(database):
+    return db.create_user("alice", "Training-password-123!")
+
+
+@pytest.fixture
+def logged_in_client(client, owner_id):
+    with client.session_transaction() as saved_session:
+        saved_session["user_id"] = owner_id
+
+    return client

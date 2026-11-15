@@ -1,7 +1,10 @@
 import re
 
 from werkzeug.security import check_password_hash
+
 import db
+
+
 def test_valid_login_creates_session(client):
     password = "Training-password-123!"
     user_id = db.create_user("alice", password)
@@ -29,6 +32,9 @@ def test_valid_login_creates_session(client):
 
     with client.session_transaction() as saved_session:
         assert saved_session.get("user_id") == user_id
+
+    assert client.get("/").status_code == 200
+
 
 def test_registration_creates_user(client):
     password = "qwerty123456"
@@ -59,8 +65,11 @@ def test_registration_creates_user(client):
     assert user is not None
     assert check_password_hash(user["password_hash"], password)
 
+    page = client.get("/")
+    assert page.status_code == 302
+    assert page.headers["Location"] == "/login"
 
-    assert client.get("/").status_code == 200
+
 def test_logout_clears_session(client):
     user_id = db.create_user("alice", "Training-password-123!")
 
@@ -86,3 +95,7 @@ def test_logout_clears_session(client):
 
     with client.session_transaction() as saved_session:
         assert "user_id" not in saved_session
+
+    page = client.get("/")
+    assert page.status_code == 302
+    assert page.headers["Location"] == "/login"

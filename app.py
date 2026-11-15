@@ -20,6 +20,22 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ["SECRET_KEY"]
 CSRFProtect(app)
 
+@app.before_request
+def require_login_for_notes():
+    protected_endpoints = {
+        "index",
+        "create_note_view",
+        "edit_note_view",
+        "update_note_view",
+        "delete_note_view",
+    }
+
+    if request.endpoint in protected_endpoints:
+        if session.get("user_id") is None:
+            return redirect(url_for("login_view"), code=302)
+
+    return None
+
 @app.get("/")
 def index():
     notes = get_notes()

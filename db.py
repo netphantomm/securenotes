@@ -5,8 +5,7 @@ from werkzeug.security import generate_password_hash
 DB_PATH = Path(__file__).resolve().parent / "instance" / "database.db"
 
 def get_notes():
-    connection = sqlite3.connect(DB_PATH)
-    connection.row_factory = sqlite3.Row
+    connection = get_connection()
     try:
         cursor = connection.execute("SELECT id, title, body FROM notes;")
         notes = cursor.fetchall()
@@ -14,7 +13,7 @@ def get_notes():
     finally:
         connection.close()
 def create_note(title, body):
-    connection = sqlite3.connect(DB_PATH)
+    connection = get_connection()
     try:
         connection.execute(
             "INSERT INTO notes (title, body) VALUES (?, ?)",
@@ -25,7 +24,7 @@ def create_note(title, body):
         connection.close()
 
 def delete_note(note_id):
-    connection = sqlite3.connect(DB_PATH)
+    connection = get_connection()
     try:
         cursor = connection.execute(
             "DELETE FROM notes WHERE id = ?",
@@ -38,8 +37,7 @@ def delete_note(note_id):
 
 
 def get_note(note_id):
-    connection = sqlite3.connect(DB_PATH)
-    connection.row_factory = sqlite3.Row
+    connection = get_connection()
     try:
         cursor = connection.execute(
             "SELECT id, title, body FROM notes WHERE id = ?",
@@ -50,7 +48,7 @@ def get_note(note_id):
     finally:
         connection.close()
 def update_note(note_id, title, body):
-    connection = sqlite3.connect(DB_PATH)
+    connection = get_connection()
     try:
         cursor = connection.execute(
             "UPDATE notes SET title = ?, body = ? WHERE id = ?",
@@ -64,8 +62,7 @@ def update_note(note_id, title, body):
 
 def create_user(username, password):
     password_hash = generate_password_hash(password)
-    connection = sqlite3.connect(DB_PATH)
-    
+    connection = get_connection()
     try:
         cursor = connection.execute(
             "INSERT INTO users (username, password_hash) VALUES (?, ?)",
@@ -77,8 +74,7 @@ def create_user(username, password):
         connection.close()
 
 def get_user_by_username(username):
-    connection = sqlite3.connect(DB_PATH)
-    connection.row_factory = sqlite3.Row
+    connection = get_connection()
 
     try:
         cursor = connection.execute(
@@ -89,3 +85,9 @@ def get_user_by_username(username):
         return user
     finally:
         connection.close()
+
+def get_connection():
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    connection.execute("PRAGMA foreign_keys = ON")
+    return connection

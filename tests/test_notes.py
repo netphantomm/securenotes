@@ -2,6 +2,9 @@ import re
 
 import db
 
+import pytest
+
+pytestmark = pytest.mark.usefixtures("logged_in_client")
 
 def test_invalid_edit_keeps_original_note(client):
     db.create_note("Original title", "Original body")
