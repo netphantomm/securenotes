@@ -68,7 +68,7 @@ def update_note_view(note_id):
     if not 1 <= len(body) <= 5000:
         abort(400, description="Body must contain 1 to 5000 characters.")
 
-    updated = update_note(note_id, title, body)
+    updated = update_note(note_id, title, body, session["user_id"])
 
     if not updated:
         abort(404, description="Note not found.")
@@ -81,7 +81,7 @@ def health():
 
 @app.post("/notes/<int:note_id>/delete")
 def delete_note_view(note_id):
-    deleted = delete_note(note_id)
+    deleted = delete_note(note_id, session["user_id"])
     if not deleted:
         abort(404, description="Note not found.")
     return redirect(url_for("index"), code=303)

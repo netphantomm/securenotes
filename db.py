@@ -43,12 +43,13 @@ def create_note(title, body, owner_id):
     finally:
         connection.close()
 
-def delete_note(note_id):
+def delete_note(note_id, owner_id):
     connection = get_connection()
+
     try:
         cursor = connection.execute(
-            "DELETE FROM notes WHERE id = ?",
-            (note_id,),
+            "DELETE FROM notes WHERE id = ? AND owner_id = ?",
+            (note_id, owner_id),
         )
         connection.commit()
         return cursor.rowcount == 1
@@ -56,12 +57,17 @@ def delete_note(note_id):
         connection.close()
 
 
-def update_note(note_id, title, body):
+def update_note(note_id, title, body, owner_id):
     connection = get_connection()
+
     try:
         cursor = connection.execute(
-            "UPDATE notes SET title = ?, body = ? WHERE id = ?",
-            (title, body, note_id,),
+            """
+            UPDATE notes
+            SET title = ?, body = ?
+            WHERE id = ? AND owner_id = ?
+            """,
+            (title, body, note_id, owner_id),
         )
         connection.commit()
         return cursor.rowcount == 1
