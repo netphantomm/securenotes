@@ -4,20 +4,40 @@ from werkzeug.security import generate_password_hash
 
 DB_PATH = Path(__file__).resolve().parent / "instance" / "database.db"
 
-def get_notes():
+def get_notes(owner_id):
     connection = get_connection()
+
     try:
-        cursor = connection.execute("SELECT id, title, body FROM notes;")
+        cursor = connection.execute(
+            "SELECT id, title, body FROM notes WHERE owner_id = ? ORDER BY id",
+            (owner_id,),
+        )
         notes = cursor.fetchall()
         return notes
     finally:
         connection.close()
-def create_note(title, body):
+
+
+def get_note(note_id, owner_id):
     connection = get_connection()
+
+    try:
+        cursor = connection.execute(
+            "SELECT id, title, body FROM notes WHERE id = ? AND owner_id = ?",
+            (note_id, owner_id),
+        )
+        note = cursor.fetchone()
+        return note
+    finally:
+        connection.close()
+
+def create_note(title, body, owner_id):
+    connection = get_connection()
+
     try:
         connection.execute(
-            "INSERT INTO notes (title, body) VALUES (?, ?)",
-            (title, body)
+            "INSERT INTO notes (title, body, owner_id) VALUES (?, ?, ?)",
+            (title, body, owner_id),
         )
         connection.commit()
     finally:
@@ -36,17 +56,6 @@ def delete_note(note_id):
         connection.close()
 
 
-def get_note(note_id):
-    connection = get_connection()
-    try:
-        cursor = connection.execute(
-            "SELECT id, title, body FROM notes WHERE id = ?",
-            (note_id,),
-        )
-        note = cursor.fetchone()
-        return note
-    finally:
-        connection.close()
 def update_note(note_id, title, body):
     connection = get_connection()
     try:

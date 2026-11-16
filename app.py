@@ -38,8 +38,9 @@ def require_login_for_notes():
 
 @app.get("/")
 def index():
-    notes = get_notes()
+    notes = get_notes(session["user_id"])
     return render_template("index.html", title="SecureNotes", notes=notes)
+
 @app.post("/notes")
 def create_note_view():
     title = request.form.get("title", "").strip()
@@ -48,7 +49,7 @@ def create_note_view():
         abort(400, description="Title must contain 1 to 120 characters.")
     if not 1 <= len(body) <= 5000:
         abort(400, description="Body must contain 1 to 5000 characters.")
-    create_note(title, body)
+    create_note(title, body, session["user_id"])
     return redirect(url_for("index"), code=303)
 
 
@@ -87,7 +88,7 @@ def delete_note_view(note_id):
 
 @app.get("/notes/<int:note_id>/edit")
 def edit_note_view(note_id):
-    note = get_note(note_id)
+    note = get_note(note_id, session["user_id"])
     if note is None:
         abort(404, description="Note not found.")
     return render_template("edit.html", note=note)

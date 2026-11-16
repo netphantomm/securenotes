@@ -1,10 +1,12 @@
-CREATE TABLE IF NOT EXISTS notes (
-    id INTEGER PRIMARY KEY,
-    title TEXT NOT NULL,
-    body TEXT NOT NULL
-);
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY,
     username TEXT NOT NULL UNIQUE,
     password_hash TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS notes (
+    id INTEGER PRIMARY KEY,
+    owner_id INTEGER NOT NULL REFERENCES users(id),
+    title TEXT NOT NULL,
+    body TEXT NOT NULL
 );

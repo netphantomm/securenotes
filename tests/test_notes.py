@@ -6,9 +6,9 @@ import pytest
 
 pytestmark = pytest.mark.usefixtures("logged_in_client")
 
-def test_invalid_edit_keeps_original_note(client):
-    db.create_note("Original title", "Original body")
-    note_id = db.get_notes()[0]["id"]
+def test_invalid_edit_keeps_original_note(client, owner_id):
+    db.create_note("Original title", "Original body", owner_id)
+    note_id = db.get_notes(owner_id)[0]["id"]
 
     page = client.get(f"/notes/{note_id}/edit")
     assert page.status_code == 200
@@ -31,14 +31,15 @@ def test_invalid_edit_keeps_original_note(client):
     assert response.status_code == 400
     assert b"Title must contain" in response.data
 
-    saved_note = db.get_note(note_id)
+    saved_note = db.get_note(note_id, owner_id)
     assert saved_note is not None
     assert saved_note["title"] == "Original title"
 
     assert saved_note["body"] == "Original body"
-def test_valid_edit_updates_note(client):
-    db.create_note("Original title", "Original body")
-    note_id = db.get_notes()[0]["id"]
+
+def test_valid_edit_updates_note(client, owner_id):
+    db.create_note("Original title", "Original body", owner_id)
+    note_id = db.get_notes(owner_id)[0]["id"]
 
     page = client.get(f"/notes/{note_id}/edit")
     assert page.status_code == 200
@@ -60,15 +61,15 @@ def test_valid_edit_updates_note(client):
 
     assert response.status_code == 303
 
-    saved_note = db.get_note(note_id)
+    saved_note = db.get_note(note_id, owner_id)
     assert saved_note is not None
     assert saved_note["title"] == "Updated title"
     assert saved_note["body"] == "Updated body"
-    assert len(db.get_notes()) == 1
+    assert len(db.get_notes(owner_id)) == 1
 
-def test_edit_without_csrf_keeps_original_note(client):
-    db.create_note("Original title", "Original body")
-    note_id = db.get_notes()[0]["id"]
+def test_edit_without_csrf_keeps_original_note(client, owner_id):
+    db.create_note("Original title", "Original body", owner_id)
+    note_id = db.get_notes(owner_id)[0]["id"]
 
     response = client.post(
         f"/notes/{note_id}/edit",
@@ -81,7 +82,7 @@ def test_edit_without_csrf_keeps_original_note(client):
     assert response.status_code == 400
     assert b"The CSRF token is missing." in response.data
 
-    saved_note = db.get_note(note_id)
+    saved_note = db.get_note(note_id, owner_id)
     assert saved_note is not None
     assert saved_note["title"] == "Original title"
 
