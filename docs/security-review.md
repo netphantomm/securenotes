@@ -195,3 +195,8 @@ JSON-отчёт сохраняется как артефакт `semgrep-report` 
 но не гарантирует отсутствие всех уязвимостей.
 
 ![Успешный запуск GitHub Actions](screenshots/github-actions.png)
+
+### JSON-отчёты
+
+- [До исправлений](../reports/zap/baseline-before.json)
+- [После исправлений](../reports/zap/baseline-after.json)

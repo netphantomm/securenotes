@@ -19,6 +19,20 @@ app = Flask(__name__)
 
 app.config["SECRET_KEY"] = os.environ["SECRET_KEY"]
 CSRFProtect(app)
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+
+@app.after_request
+def set_security_headers(response):
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; "
+        "base-uri 'self'; "
+        "object-src 'none'; "
+        "frame-ancestors 'none'; "
+        "form-action 'self'"
+    )
+    return response
 
 @app.before_request
 def require_login_for_notes():
