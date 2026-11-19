@@ -2,3 +2,6 @@
 __pycache__/
 .env
 instance/
+reports/zap/*.html
+reports/zap/startup-debug.log
+reports/zap/zap.yaml
